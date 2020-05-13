@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 
 from rest_framework import viewsets
-from rest_framework.response import Response
+from rest_framework import permissions
 
 from .forms import BookmarkForm
 from .models import Bookmark, Tag
@@ -66,27 +66,11 @@ def bookmark_edit(request, pk):
 
 class BookmarkViewSet(viewsets.ModelViewSet):
 
-    def list(self,request):
-        queryset = Bookmark.objects.all()
-        serializer = BookmarkSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, pk=None):
-        queryset = Bookmark.objects.all()
-        user = get_object_or_404(queryset, pk=pk)
-        serializer = BookmarkSerializer(user)
-        return Response(serializer.data)
-
+    queryset = Bookmark.objects.all()
+    serializer_class = BookmarkSerializer
 
 class TagViewSet(viewsets.ModelViewSet):
 
-    def list(self, request):
-        queryset = Tag.objects.all()
-        serializer = TagSerializer(queryset, many=True)
-        return Response(serializer.data)
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
 
-    def retrieve(self, request, pk=None):
-        queryset = Tag.objects.all()
-        user = get_object_or_404(queryset, pk=pk)
-        serializer = TagSerializer(user)
-        return Response(serializer.data)
