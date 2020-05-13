@@ -10,6 +10,3 @@ django = "==1.11.28"
 pytz = "*"
 django-crispy-forms = "*"
 djangorestframework = "*"
-
-[requires]
-python_version = "3.7"
