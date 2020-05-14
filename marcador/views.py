@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.models import User
 
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -9,6 +10,7 @@ from rest_framework import permissions
 from .forms import BookmarkForm
 from .models import Bookmark, Tag
 from .serializers import BookmarkSerializer, TagSerializer
+from .permissions import IsOwnerOrReadOnly
 
 def bookmark_list(request):
     bookmarks = Bookmark.public.all()
@@ -68,9 +70,14 @@ class BookmarkViewSet(viewsets.ModelViewSet):
 
     queryset = Bookmark.objects.all()
     serializer_class = BookmarkSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
+
 
 class TagViewSet(viewsets.ModelViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
 
