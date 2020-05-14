@@ -27,12 +27,12 @@ urlpatterns = [
         name='marcador_bookmark_edit'
     ),
     url(
+        r'^api/',
+        include(router.urls)
+    ),
+    url(
         r'^$',
         views.bookmark_list,
         name='marcador_bookmark_list'
-    ),
-    url(
-        r'^',
-        include(router.urls)
     )
 ]
