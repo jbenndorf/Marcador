@@ -29,6 +29,7 @@ urlpatterns = [
     url(
         r'^api/',
         include(router.urls)
+
     ),
     url(
         r'^$',
