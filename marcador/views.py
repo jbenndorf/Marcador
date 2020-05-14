@@ -66,7 +66,9 @@ def bookmark_edit(request, pk):
 
 
 class BookmarkViewSet(viewsets.ModelViewSet):
-
+    """
+    Bookmarks
+    """
     queryset = Bookmark.objects.all()
     serializer_class = BookmarkSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
@@ -74,7 +76,9 @@ class BookmarkViewSet(viewsets.ModelViewSet):
 
 
 class TagViewSet(viewsets.ModelViewSet):
-
+    """
+    Tags
+    """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
