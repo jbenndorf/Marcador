@@ -3,6 +3,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 
+from rest_framework import filters
 from rest_framework import viewsets
 
 from .forms import BookmarkForm
@@ -70,6 +71,9 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     """
     queryset = Bookmark.objects.all()
     serializer_class = BookmarkSerializer
+    # Allows for searching by title and url. Still need to allow for searching by tag (many to many relationship).
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'url']
 
     def get_queryset(self):
         result = Bookmark.objects.filter(owner=self.request.user) | Bookmark.objects.filter(is_public=True)
