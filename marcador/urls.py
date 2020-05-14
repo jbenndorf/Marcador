@@ -1,6 +1,12 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
+
+from rest_framework.routers import DefaultRouter
 
 from . import views
+
+router = DefaultRouter()
+router.register(r'bookmarks', views.BookmarkViewSet)
+router.register(r'tags', views.TagViewSet)
 
 urlpatterns = [
     url(
@@ -23,4 +29,8 @@ urlpatterns = [
         views.bookmark_list,
         name='marcador_bookmark_list'
     ),
+    url(
+        r'^',
+        include(router.urls)
+    )
 ]
