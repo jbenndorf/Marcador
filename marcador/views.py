@@ -65,15 +65,20 @@ def bookmark_edit(request, pk):
     return render(request, 'marcador/form.html', context)
 
 
+class DynamicSearchFilter(filters.SearchFilter):
+
+    def get_search_fields(self, view, request):
+        return request.GET.getlist('search_fields', [])
+
+
 class BookmarkViewSet(viewsets.ModelViewSet):
     """
     Bookmarks
     """
     queryset = Bookmark.objects.all()
     serializer_class = BookmarkSerializer
-    # Allows for searching by title and url. Still need to allow for searching by tag (many to many relationship).
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'url']
+    filter_backends = [DynamicSearchFilter]
+    search_fields = ['title']
 
     def get_queryset(self):
         result = Bookmark.objects.filter(owner=self.request.user) | Bookmark.objects.filter(is_public=True)
