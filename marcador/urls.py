@@ -35,5 +35,8 @@ urlpatterns = [
         r'^$',
         views.bookmark_list,
         name='marcador_bookmark_list'
-    )
+    ),
+    url(
+        r'^api-auth/',
+        include('rest_framework.urls'))
 ]
