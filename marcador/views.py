@@ -3,11 +3,13 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 
+from rest_framework import permissions
 from rest_framework import filters
 from rest_framework import viewsets
 
 from .forms import BookmarkForm
 from .models import Bookmark, Tag
+from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
 from .serializers import BookmarkSerializer, TagSerializer
 
 
@@ -71,6 +73,7 @@ class DynamicSearchFilter(filters.SearchFilter):
         return request.GET.getlist('search_fields', [])
 
 
+# User can only UPDATE AND DELETE own bookmarks
 class BookmarkViewSet(viewsets.ModelViewSet):
     """
     Bookmarks
@@ -78,6 +81,7 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     queryset = Bookmark.public.all()
     serializer_class = BookmarkSerializer
     filter_backends = [DynamicSearchFilter]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     search_fields = ['title']
 
     # def get_queryset(self):
@@ -91,3 +95,4 @@ class TagViewSet(viewsets.ModelViewSet):
     """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsSuperuserOrReadOnly]
