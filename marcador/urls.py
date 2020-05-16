@@ -27,16 +27,17 @@ urlpatterns = [
         name='marcador_bookmark_edit'
     ),
     url(
-        r'^api/',
-        include(router.urls)
-
-    ),
-    url(
         r'^$',
         views.bookmark_list,
         name='marcador_bookmark_list'
     ),
     url(
+        r'^api/',
+        include(router.urls)
+
+    ),
+    url(
         r'^api-auth/',
-        include('rest_framework.urls'))
+        include('rest_framework.urls')
+    ),
 ]

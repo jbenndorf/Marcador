@@ -75,14 +75,14 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     """
     Bookmarks
     """
-    queryset = Bookmark.objects.all()
+    queryset = Bookmark.public.all()
     serializer_class = BookmarkSerializer
     filter_backends = [DynamicSearchFilter]
     search_fields = ['title']
 
-    def get_queryset(self):
-        result = Bookmark.objects.filter(owner=self.request.user) | Bookmark.objects.filter(is_public=True)
-        return result
+    # def get_queryset(self):
+    #     result = Bookmark.objects.filter(owner=self.request.user) | Bookmark.objects.filter(is_public=True)
+    #     return result
 
 
 class TagViewSet(viewsets.ModelViewSet):
