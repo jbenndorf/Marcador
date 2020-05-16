@@ -5,6 +5,7 @@ from .models import Bookmark, Tag
 
 class BookmarkSerializer(serializers.ModelSerializer):
     tags = serializers.StringRelatedField(many=True)
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Bookmark
