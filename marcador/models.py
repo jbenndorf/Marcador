@@ -23,7 +23,7 @@ class PublicBookmarkManager(models.Manager):
 
 
 class Bookmark(models.Model):
-    bookmark_url = models.URLField()
+    bookmark_url = models.URLField('URL')
     title = models.CharField('title', max_length=255)
     description = models.TextField('description', blank=True)
     is_public = models.BooleanField('public', default=True)
