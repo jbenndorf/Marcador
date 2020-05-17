@@ -3,16 +3,16 @@ from rest_framework import serializers
 from .models import Bookmark, Tag
 
 
-class BookmarkSerializer(serializers.ModelSerializer):
+class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
     tags = serializers.StringRelatedField(many=True)
-    owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.StringRelatedField(source='owner.username')
 
     class Meta:
         model = Bookmark
         fields = ['url', 'title', 'description', 'is_public', 'date_created', 'date_updated', 'owner', 'tags']
 
 
-class TagSerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Tag
