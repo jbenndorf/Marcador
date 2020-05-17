@@ -1,11 +1,9 @@
 # encoding: utf-8
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 
 
-@python_2_unicode_compatible
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -24,9 +22,8 @@ class PublicBookmarkManager(models.Manager):
         return qs.filter(is_public=True)
 
 
-@python_2_unicode_compatible
 class Bookmark(models.Model):
-    url = models.URLField()
+    bookmark_url = models.URLField()
     title = models.CharField('title', max_length=255)
     description = models.TextField('description', blank=True)
     is_public = models.BooleanField('public', default=True)
