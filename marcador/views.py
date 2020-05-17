@@ -89,6 +89,7 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     #     return result
 
 
+# Only supervisor can UPDATE AND DELETE bookmarks
 class TagViewSet(viewsets.ModelViewSet):
     """
     Tags
