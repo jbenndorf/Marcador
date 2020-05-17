@@ -41,6 +41,7 @@ class Bookmark(models.Model):
         verbose_name_plural = 'bookmarks'
         ordering = ['-date_created']
 
+
     def __str__(self):
         return '%s (%s)' % (self.title, self.url)
 
