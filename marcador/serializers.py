@@ -4,7 +4,7 @@ from .models import Bookmark, Tag
 
 
 class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
-    tags = serializers.StringRelatedField(many=True)
+    tags = serializers.HyperlinkedRelatedField(many=True, view_name='tag-detail', read_only=True)
     owner = serializers.StringRelatedField(source='owner.username')
 
     class Meta:
