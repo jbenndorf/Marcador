@@ -10,7 +10,7 @@ from rest_framework import viewsets
 from .forms import BookmarkForm
 from .models import Bookmark, Tag
 from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
-from .serializers import BookmarkSerializer, TagSerializer
+from .serializers import BookmarkSerializer, TagSerializer, UserSerializer
 
 
 def bookmark_list(request):
@@ -100,3 +100,13 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsSuperuserOrReadOnly]
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    User
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = 'username'

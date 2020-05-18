@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+
 from rest_framework import serializers
 
 from .models import Bookmark, Tag
@@ -20,3 +22,13 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tag
         fields = ['name']
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['url', 'id', 'username', 'bookmarks']
+        extra_kwargs = {
+            'url' : {'view_name': 'user-detail', 'lookup_field': 'username'},
+        }
