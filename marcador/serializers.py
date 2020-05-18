@@ -6,8 +6,12 @@ from .models import Bookmark, Tag
 
 
 class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
-    tags = serializers.HyperlinkedRelatedField(many=True, view_name='tag-detail', read_only=True)
-    owner = serializers.CharField(source='bookmark.owner', read_only=True)
+    tags = serializers.HyperlinkedRelatedField(
+        view_name='tag-detail',
+        queryset=Tag.objects.all(),
+        many=True,
+    )
+    owner = serializers.CharField(read_only=True)
     date_created = serializers.DateTimeField(read_only=True)
     date_updated = serializers.DateTimeField(read_only=True)
 
@@ -21,7 +25,7 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ['name']
+        fields = ['url', 'id', 'name']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
