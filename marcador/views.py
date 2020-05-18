@@ -2,10 +2,12 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
+from django.db.models import Prefetch
 
 from rest_framework import permissions
 from rest_framework import filters
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from .forms import BookmarkForm
 from .models import Bookmark, Tag
@@ -109,3 +111,29 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+
+    def get_queryset(self):
+        return self.queryset.prefetch_related(
+            Prefetch(
+                'bookmarks',
+                Bookmark.public.all(),
+            )
+        )
+
+    # hier musst du den decorator einsetzen
+    def bookmarks(self, request, *args, **kwargs):
+        # hier sollst du eine variable bookmarks erstellen
+        # und darin die bookmarks fuer den entsprechenden user
+        # abfragen
+
+        context = {
+            'request': request
+        }
+
+        page = self.paginate_queryset(bookmarks)
+        if page is not None:
+            serializer = BookmarkSerializer(page, many=True, context=context)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = BookmarkSerializer(bookmarks, many=True, context=context)
+        return Response(serializer.data)
