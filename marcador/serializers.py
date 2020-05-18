@@ -9,7 +9,7 @@ class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Tag.objects.all(),
         many=True,
     )
-    owner = serializers.CharField(source='bookmark.owner', read_only=True)
+    owner = serializers.CharField(read_only=True)
     date_created = serializers.DateTimeField(read_only=True)
     date_updated = serializers.DateTimeField(read_only=True)
 
