@@ -80,7 +80,8 @@ class DynamicSearchFilter(filters.SearchFilter):
 # User can only UPDATE AND DELETE own bookmarks
 class BookmarkViewSet(viewsets.ModelViewSet):
     """
-    Bookmarks
+    This Bookmark View Set automatically provides 'list', 'create' and 'retrieve'
+    actions for authenticated users. Owners of bookmarks can perform 'update' and 'delete' actions.
     """
     queryset = Bookmark.public.all()
     serializer_class = BookmarkSerializer
@@ -99,7 +100,8 @@ class BookmarkViewSet(viewsets.ModelViewSet):
 # Only supervisor can UPDATE AND DELETE bookmarks
 class TagViewSet(viewsets.ModelViewSet):
     """
-    Tags
+    This Tag View Set automatically provides 'list', 'create' and 'retrieve'
+    actions for authenticated users.
     """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -108,7 +110,9 @@ class TagViewSet(viewsets.ModelViewSet):
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    User
+    This User View Set automatically provides 'list' and 'retrieve' actions.
+
+    User instances are accessible by username.
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -124,6 +128,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True)
     def bookmarks(self, request, *args, **kwargs):
+        """An additional endpoint for listing a user's public bookmarks"""
         user = self.get_object()
         bookmarks = user.bookmarks.get_queryset()
 
