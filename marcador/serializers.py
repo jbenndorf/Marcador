@@ -29,6 +29,7 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    bookmarks = BookmarkSerializer(many=True)
 
     class Meta:
         model = User
