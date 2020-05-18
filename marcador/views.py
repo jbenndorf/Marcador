@@ -7,12 +7,14 @@ from django.db.models import Prefetch
 from rest_framework import permissions
 from rest_framework import filters
 from rest_framework import viewsets
+from rest_framework import renderers
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from .forms import BookmarkForm
 from .models import Bookmark, Tag
 from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
-from .serializers import BookmarkSerializer, TagSerializer, UserSerializer
+from .serializers import BookmarkSerializer, TagSerializer, UserSerializer, NestedBookmarkSerializer
 
 
 def bookmark_list(request):
@@ -120,11 +122,10 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             )
         )
 
-    # hier musst du den decorator einsetzen
+    @action(detail=True)
     def bookmarks(self, request, *args, **kwargs):
-        # hier sollst du eine variable bookmarks erstellen
-        # und darin die bookmarks fuer den entsprechenden user
-        # abfragen
+        user = self.get_object()
+        bookmarks = user.bookmarks.get_queryset()
 
         context = {
             'request': request
@@ -132,8 +133,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
         page = self.paginate_queryset(bookmarks)
         if page is not None:
-            serializer = BookmarkSerializer(page, many=True, context=context)
+            serializer = NestedBookmarkSerializer(page, many=True, context=context)
             return self.get_paginated_response(serializer.data)
 
-        serializer = BookmarkSerializer(bookmarks, many=True, context=context)
+        serializer = NestedBookmarkSerializer(bookmarks, many=True, context=context)
         return Response(serializer.data)
