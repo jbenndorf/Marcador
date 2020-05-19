@@ -7,7 +7,6 @@ from django.db.models import Prefetch
 from rest_framework import permissions
 from rest_framework import filters
 from rest_framework import viewsets
-from rest_framework import renderers
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
@@ -77,7 +76,6 @@ class DynamicSearchFilter(filters.SearchFilter):
         return request.GET.getlist('search_fields', [])
 
 
-# User can only UPDATE AND DELETE own bookmarks
 class BookmarkViewSet(viewsets.ModelViewSet):
     """
     This Bookmark View Set automatically provides 'list', 'create' and 'retrieve'
@@ -92,12 +90,7 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    # def get_queryset(self):
-    #     result = Bookmark.objects.filter(owner=self.request.user) | Bookmark.objects.filter(is_public=True)
-    #     return result
 
-
-# Only supervisor can UPDATE AND DELETE bookmarks
 class TagViewSet(viewsets.ModelViewSet):
     """
     This Tag View Set automatically provides 'list', 'create' and 'retrieve'
@@ -128,9 +121,11 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True)
     def bookmarks(self, request, *args, **kwargs):
-        """An additional endpoint for listing a user's public bookmarks"""
+        """An additional endpoint for listing all user's bookmarks"""
         user = self.get_object()
-        bookmarks = user.bookmarks.get_queryset()
+        bookmarks = Bookmark.public.filter(owner=user)
+        if request.user.is_authenticated and (request.user == user or request.user.is_superuser):
+            bookmarks = Bookmark.objects.filter(owner=user)
 
         context = {
             'request': request
