@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'marcador',
     'crispy_forms',
     'rest_framework',
+    'marcador_api'
 ]
 
 MIDDLEWARE = [

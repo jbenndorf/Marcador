@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 
 from rest_framework import serializers
 
-from .models import Bookmark, Tag
+from marcador.models import Bookmark, Tag
 
 
 class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
