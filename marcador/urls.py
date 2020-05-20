@@ -6,12 +6,12 @@ urlpatterns = [
     url(
         r'^$',
         views.BookmarkList.as_view(),
-        name='bookmark-list'
+        name='bookmark-list',
     ),
     url(
         r'^user/(?P<username>[-\w]+)/$',
         views.UserBookmarkList.as_view(),
-        name='bookmark-user'
+        name='bookmark-user',
     ),
     url(
         r'^create/$',
