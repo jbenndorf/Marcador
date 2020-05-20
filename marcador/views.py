@@ -4,12 +4,15 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
+from django_filters.views import FilterView
+
 from .models import Bookmark
 
 
-class BookmarkList(ListView):
+class BookmarkList(FilterView):
     model = Bookmark
     context_object_name = 'bookmarks'
+    template_name = 'marcador/bookmark_list.html'
 
     def get_queryset(self):
         bookmarks = Bookmark.public.all()
