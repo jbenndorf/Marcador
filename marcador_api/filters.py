@@ -4,9 +4,12 @@ from marcador.models import Bookmark, Tag
 
 
 class BookmarkFilter(filters.FilterSet):
-    date_created = filters.IsoDateTimeFromToRangeFilter(field_name='date_created')
-    date_updated = filters.IsoDateTimeFromToRangeFilter(field_name='date_updated')
-    tags = filters.ModelChoiceFilter(field_name='tags', to_field_name='name', queryset=Tag.objects.all())
+    date_created = filters.IsoDateTimeFromToRangeFilter()
+    date_updated = filters.IsoDateTimeFromToRangeFilter()
+    tags = filters.ModelChoiceFilter(
+        queryset=Tag.objects.all(),
+        to_field_name='name',
+    )
 
     class Meta:
         model = Bookmark

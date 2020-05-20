@@ -1,17 +1,35 @@
-from django.db.models import Prefetch
 from django.contrib.auth.models import User
-from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Prefetch
 
-from rest_framework import permissions
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from rest_framework import permissions
 from rest_framework import viewsets
-from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from marcador.models import Bookmark, Tag
-from marcador_api.permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
-from marcador_api.serializers import BookmarkSerializer, TagSerializer, UserSerializer, NestedBookmarkSerializer
-from marcador_api.filters import BookmarkFilter
+from .filters import BookmarkFilter
+from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
+from .serializers import (
+    BookmarkSerializer,
+    NestedBookmarkSerializer,
+    TagSerializer,
+    UserSerializer
+)
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    """
+    This Tag View Set automatically provides 'list', 'create' and 'retrieve'
+    actions for authenticated users.
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsSuperuserOrReadOnly
+    ]
 
 
 class BookmarkViewSet(viewsets.ModelViewSet):
@@ -24,23 +42,16 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     """
     queryset = Bookmark.public.all()
     serializer_class = BookmarkSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrReadOnly
+    ]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_class = BookmarkFilter
     search_fields = ['title', 'bookmark_url', 'description']
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-
-
-class TagViewSet(viewsets.ModelViewSet):
-    """
-    This Tag View Set automatically provides 'list', 'create' and 'retrieve'
-    actions for authenticated users.
-    """
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsSuperuserOrReadOnly]
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -66,7 +77,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         """An additional endpoint for listing all user's bookmarks"""
         user = self.get_object()
         bookmarks = Bookmark.public.filter(owner=user)
-        if request.user.is_authenticated and (request.user == user or request.user.is_superuser):
+        if request.user.is_authenticated and (request.user == user or
+                                              request.user.is_superuser):
             bookmarks = Bookmark.objects.filter(owner=user)
 
         context = {
@@ -75,8 +87,16 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
         page = self.paginate_queryset(bookmarks)
         if page is not None:
-            serializer = NestedBookmarkSerializer(page, many=True, context=context)
+            serializer = NestedBookmarkSerializer(
+                page,
+                many=True,
+                context=context
+            )
             return self.get_paginated_response(serializer.data)
 
-        serializer = NestedBookmarkSerializer(bookmarks, many=True, context=context)
+        serializer = NestedBookmarkSerializer(
+            bookmarks,
+            many=True,
+            context=context
+        )
         return Response(serializer.data)
