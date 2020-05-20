@@ -1,17 +1,22 @@
-from django.db.models import Prefetch
 from django.contrib.auth.models import User
-from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Prefetch
 
-from rest_framework import permissions
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from rest_framework import permissions
 from rest_framework import viewsets
-from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from marcador.models import Bookmark, Tag
-from marcador_api.permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
-from marcador_api.serializers import BookmarkSerializer, TagSerializer, UserSerializer, NestedBookmarkSerializer
-from marcador_api.filters import BookmarkFilter
+from .filters import BookmarkFilter
+from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
+from .serializers import (
+    TagSerializer,
+    BookmarkSerializer,
+    NestedBookmarkSerializer,
+    UserSerializer
+)
 
 
 class BookmarkViewSet(viewsets.ModelViewSet):

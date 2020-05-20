@@ -26,7 +26,6 @@ class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = Tag
         fields = ['url', 'id', 'name']
