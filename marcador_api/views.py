@@ -26,7 +26,10 @@ class TagViewSet(viewsets.ModelViewSet):
     """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsSuperuserOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsSuperuserOrReadOnly
+    ]
 
 
 class BookmarkViewSet(viewsets.ModelViewSet):
@@ -38,7 +41,10 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     """
     queryset = Bookmark.public.all()
     serializer_class = BookmarkSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrReadOnly
+    ]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_class = BookmarkFilter
     search_fields = ['title', 'bookmark_url', 'description']
@@ -70,7 +76,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         """An additional endpoint for listing all user's bookmarks"""
         user = self.get_object()
         bookmarks = Bookmark.public.filter(owner=user)
-        if request.user.is_authenticated and (request.user == user or request.user.is_superuser):
+        if request.user.is_authenticated and (request.user == user or
+                                              request.user.is_superuser):
             bookmarks = Bookmark.objects.filter(owner=user)
 
         context = {
@@ -79,8 +86,16 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
         page = self.paginate_queryset(bookmarks)
         if page is not None:
-            serializer = NestedBookmarkSerializer(page, many=True, context=context)
+            serializer = NestedBookmarkSerializer(
+                page,
+                many=True,
+                context=context
+            )
             return self.get_paginated_response(serializer.data)
 
-        serializer = NestedBookmarkSerializer(bookmarks, many=True, context=context)
+        serializer = NestedBookmarkSerializer(
+            bookmarks,
+            many=True,
+            context=context
+        )
         return Response(serializer.data)

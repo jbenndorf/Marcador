@@ -36,8 +36,8 @@ class NestedBookmarkSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Bookmark
-        fields = ['url', 'id', 'bookmark_url', 'title', 'description', 'is_public',
-                  'date_created', 'date_updated', 'tags']
+        fields = ['url', 'id', 'bookmark_url', 'title', 'description',
+                  'is_public', 'date_created', 'date_updated', 'tags']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
