@@ -11,7 +11,7 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def tagcloud(context, owner=None):
-    url = reverse('marcador_bookmark_list')
+    url = reverse('bookmark-list')
     filters = {'bookmark__is_public': True}
 
     if owner is not None:

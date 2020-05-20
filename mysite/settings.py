@@ -112,7 +112,7 @@ TIME_ZONE = 'UTC'
 
 LOGIN_URL = 'mysite_login'
 LOGOUT_URL = 'mysite_logout'
-LOGIN_REDIRECT_URL = 'marcador_bookmark_list'
+LOGIN_REDIRECT_URL = 'bookmark-list'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 USE_I18N = True

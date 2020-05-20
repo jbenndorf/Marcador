@@ -24,5 +24,5 @@ urlpatterns = [
     url(r'^login/$', login, {'template_name': 'login.html'},
         name='mysite_login'),
     url(r'^logout/$', logout,
-        {'next_page': reverse_lazy('marcador_bookmark_list')}, name='mysite_logout'),
+        {'next_page': reverse_lazy('bookmark-list')}, name='mysite_logout'),
 ]

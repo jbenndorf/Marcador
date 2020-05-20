@@ -2,9 +2,21 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import ListView
 
 from .forms import BookmarkForm
 from .models import Bookmark
+
+
+class BookmarkList(ListView):
+    model = Bookmark
+    context_object_name = 'bookmarks'
+
+    def get_queryset(self):
+        bookmarks = Bookmark.public.all()
+        if self.request.GET.get('tag'):
+            bookmarks = bookmarks.filter(tags__name=self.request.GET['tag'])
+        return bookmarks
 
 
 def bookmark_list(request):

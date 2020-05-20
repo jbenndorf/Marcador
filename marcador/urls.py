@@ -20,7 +20,7 @@ urlpatterns = [
     ),
     url(
         r'^$',
-        views.bookmark_list,
-        name='marcador_bookmark_list'
+        views.BookmarkList.as_view(),
+        name='bookmark-list'
     ),
 ]
