@@ -19,7 +19,8 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     This Bookmark View Set automatically provides 'list', 'create' and 'retrieve'
     actions for authenticated users. Owners of bookmarks can perform 'update' and 'delete' actions.
 
-    When filtering by 'date created' or 'date updated', please use the following format:
+    When filtering by 'date created' or 'date updated', please use the following ISO 8601 format:
+    YYYY-MM-DD hh:mm:ss
     """
     queryset = Bookmark.public.all()
     serializer_class = BookmarkSerializer
