@@ -5,6 +5,15 @@ from rest_framework import serializers
 from marcador.models import Bookmark, Tag
 
 
+class TagSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['url', 'id', 'name']
+        extra_kwargs = {
+            'url': {'view_name': 'marcador_api:tag-detail'}
+        }
+
+
 class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
     tags = serializers.HyperlinkedRelatedField(
         view_name='marcador_api:tag-detail',
@@ -25,16 +34,6 @@ class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
                   'date_created', 'date_updated', 'owner', 'tags']
         extra_kwargs = {
             'url': {'view_name': 'marcador_api:bookmark-detail'}
-        }
-
-
-class TagSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Tag
-        fields = ['url', 'id', 'name']
-        extra_kwargs = {
-            'url': {'view_name': 'marcador_api:tag-detail'}
         }
 
 
