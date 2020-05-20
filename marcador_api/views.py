@@ -1,5 +1,6 @@
 from django.db.models import Prefetch
 from django.contrib.auth.models import User
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import permissions
 from rest_framework import filters
@@ -10,24 +11,22 @@ from rest_framework.decorators import action
 from marcador.models import Bookmark, Tag
 from marcador_api.permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
 from marcador_api.serializers import BookmarkSerializer, TagSerializer, UserSerializer, NestedBookmarkSerializer
-
-
-class DynamicSearchFilter(filters.SearchFilter):
-
-    def get_search_fields(self, view, request):
-        return request.GET.getlist('search_fields', [])
+from marcador_api.filters import BookmarkFilter
 
 
 class BookmarkViewSet(viewsets.ModelViewSet):
     """
     This Bookmark View Set automatically provides 'list', 'create' and 'retrieve'
     actions for authenticated users. Owners of bookmarks can perform 'update' and 'delete' actions.
+
+    When filtering by 'date created' or 'date updated', please use the following format:
     """
     queryset = Bookmark.public.all()
     serializer_class = BookmarkSerializer
-    filter_backends = [DynamicSearchFilter]
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    search_fields = ['title']
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filterset_class = BookmarkFilter
+    search_fields = ['title', 'bookmark_url', 'description']
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

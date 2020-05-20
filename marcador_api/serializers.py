@@ -11,7 +11,11 @@ class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Tag.objects.all(),
         many=True,
     )
-    owner = serializers.CharField(read_only=True)
+    owner = serializers.HyperlinkedRelatedField(
+        view_name='user-detail',
+        lookup_field='username',
+        read_only=True,
+    )
     date_created = serializers.DateTimeField(read_only=True)
     date_updated = serializers.DateTimeField(read_only=True)
 
@@ -44,5 +48,5 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['url', 'id', 'username', 'bookmarks']
         extra_kwargs = {
-            'url' : {'view_name': 'user-detail', 'lookup_field': 'username'},
+            'url': {'view_name': 'user-detail', 'lookup_field': 'username'},
         }
