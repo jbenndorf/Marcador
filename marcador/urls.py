@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     url(
         r'^user/(?P<username>[-\w]+)/$',
-        views.bookmark_user,
+        views.UserBookmarkList.as_view(),
         name='marcador_bookmark_user'
     ),
     url(

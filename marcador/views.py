@@ -27,6 +27,30 @@ def bookmark_list(request):
     return render(request, 'marcador/bookmark_list.html', context)
 
 
+class UserBookmarkList(ListView):
+    context_object_name = 'bookmarks'
+
+    def __init__(self):
+        self.user = None
+        super(UserBookmarkList, self).__init__()
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        self.user = get_object_or_404(User, username=username)
+        if self.request.user == self.user:
+            bookmarks = self.user.bookmarks.all()
+        else:
+            bookmarks = Bookmark.public.filter(owner__username=username)
+        if self.request.GET.get('tag'):
+            bookmarks = bookmarks.filter(tags__name=self.request.GET['tag'])
+        return bookmarks
+
+    def get_context_data(self, **kwargs):
+        context = super(UserBookmarkList, self).get_context_data(**kwargs)
+        context['owner'] = self.user
+        return context
+
+
 def bookmark_user(request, username):
     user = get_object_or_404(User, username=username)
     if request.user == user:

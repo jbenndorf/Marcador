@@ -42,7 +42,7 @@ class Bookmark(models.Model):
         ordering = ['-date_created']
 
     def __str__(self):
-        return '%s (%s)' % (self.title, self.url)
+        return '%s (%s)' % (self.title, self.bookmark_url)
 
     def save(self, *args, **kwargs):
         if not self.id:
