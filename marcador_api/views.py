@@ -12,11 +12,21 @@ from marcador.models import Bookmark, Tag
 from .filters import BookmarkFilter
 from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
 from .serializers import (
-    TagSerializer,
     BookmarkSerializer,
     NestedBookmarkSerializer,
+    TagSerializer,
     UserSerializer
 )
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    """
+    This Tag View Set automatically provides 'list', 'create' and 'retrieve'
+    actions for authenticated users.
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsSuperuserOrReadOnly]
 
 
 class BookmarkViewSet(viewsets.ModelViewSet):
@@ -35,16 +45,6 @@ class BookmarkViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-
-
-class TagViewSet(viewsets.ModelViewSet):
-    """
-    This Tag View Set automatically provides 'list', 'create' and 'retrieve'
-    actions for authenticated users.
-    """
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsSuperuserOrReadOnly]
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
