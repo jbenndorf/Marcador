@@ -26,5 +26,5 @@ def tagcloud(context, owner=None):
     tags = Tag.objects.filter(**filters)
     tags = tags.annotate(count=models.Count('bookmark'))
     tags = tags.order_by('name').values_list('name', 'count')
-    fmt = '<a href="%s?tag={0}">{0} ({1})</a>' % url
+    fmt = '<a href="%s?tags={0}">{0} ({1})</a>' % url
     return format_html_join(', ', fmt, tags)

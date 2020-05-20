@@ -2,10 +2,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView
 
 from django_filters.views import FilterView
 
+from marcador_api.filters import BookmarkFilter
 from .models import Bookmark
 
 
@@ -13,20 +14,20 @@ class BookmarkList(FilterView):
     model = Bookmark
     context_object_name = 'bookmarks'
     template_name = 'marcador/bookmark_list.html'
+    filterset_class = BookmarkFilter
 
     def get_queryset(self):
         bookmarks = Bookmark.public.all()
-        if self.request.GET.get('tag'):
-            bookmarks = bookmarks.filter(tags__name=self.request.GET['tag'])
         return bookmarks
 
 
-class UserBookmarkList(ListView):
+class UserBookmarkList(FilterView):
     context_object_name = 'bookmarks'
     template_name = 'marcador/bookmark_user.html'
+    filterset_class = BookmarkFilter
 
     def __init__(self):
-        self.user = None
+        self.user = User.objects.none()
         super(UserBookmarkList, self).__init__()
 
     def get_queryset(self):
@@ -36,8 +37,6 @@ class UserBookmarkList(ListView):
             bookmarks = self.user.bookmarks.all()
         else:
             bookmarks = Bookmark.public.filter(owner__username=username)
-        if self.request.GET.get('tag'):
-            bookmarks = bookmarks.filter(tags__name=self.request.GET['tag'])
         return bookmarks
 
     def get_context_data(self, **kwargs):
