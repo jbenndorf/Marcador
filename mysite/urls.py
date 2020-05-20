@@ -20,6 +20,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/', include('marcador_api.urls')),
+    url(r'^api-auth/', include('rest_framework.urls')),
     url(r'^', include('marcador.urls')),
     url(
         r'^login/$',
