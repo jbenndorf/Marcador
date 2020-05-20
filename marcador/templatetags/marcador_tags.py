@@ -15,7 +15,7 @@ def tagcloud(context, owner=None):
     filters = {'bookmark__is_public': True}
 
     if owner is not None:
-        url = reverse('marcador_bookmark_user',
+        url = reverse('bookmark-user',
             kwargs={'username': owner.username})
         filters['bookmark__owner'] = owner
     if context['user'] == owner:

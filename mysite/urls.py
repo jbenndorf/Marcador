@@ -16,13 +16,19 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.core.urlresolvers import reverse_lazy
-from django.contrib.auth.views import login, logout
+from django.contrib.auth.views import LoginView, LogoutView
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('marcador.urls')),
-    url(r'^login/$', login, {'template_name': 'login.html'},
-        name='mysite_login'),
-    url(r'^logout/$', logout,
-        {'next_page': reverse_lazy('bookmark-list')}, name='mysite_logout'),
+    url(
+        r'^login/$',
+        LoginView.as_view(template_name='login.html'),
+        name='mysite_login'
+    ),
+    url(
+        r'^logout/$',
+        LogoutView.as_view(next_page=reverse_lazy('bookmark-list')),
+        name='mysite_logout'
+    ),
 ]
