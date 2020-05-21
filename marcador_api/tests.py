@@ -37,7 +37,9 @@ class TagViewSetTestCase(APITestCase):
         Not authenticated users should be able to perform the detail
         operation on the endpoint tags.
         """
-        self.assertEqual(True, True)
+        response = self.client.get(reverse(self.detail, kwargs={'pk': 1}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
 
     def test_not_authenticated_create_tags(self):
         """
@@ -66,7 +68,11 @@ class TagViewSetTestCase(APITestCase):
         Not authenticated users should not be able to perform the delete
         operation on the endpoint tags
         """
-        self.assertEqual(True, True)
+        response = self.client.post(
+            reverse(self.detail, kwargs={'pk': 1}),
+            {'name': 'delete'},
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_authenticated_read_list_tags(self):
         """
@@ -80,10 +86,13 @@ class TagViewSetTestCase(APITestCase):
 
     def test_authenticated_read_detail_tags(self):
         """
-        Authenticated users should be able to perform the list
+        Authenticated users should be able to perform the detail
         operation on the endpoint tags
         """
-        self.assertEqual(True, True)
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse(self.detail, kwargs={'pk': 1}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
 
     def test_authenticated_create_tags(self):
         """
@@ -102,14 +111,24 @@ class TagViewSetTestCase(APITestCase):
         Authenticated users should not be able to perform the update
         operation on the endpoint tags
         """
-        pass
+        self.client.force_login(user=self.user)
+        response = self.client.post(
+            reverse(self.list),
+            {'name': 'update'}
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_authenticated_delete_tags(self):
         """
         Authenticated users should not be able to perform the delete
         operation on the endpoint tags
         """
-        pass
+        self.client.force_login(user=self.user)
+        response = self.client.post(
+            reverse(self.list),
+            {'name': 'delete'}
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_superuser_read_list_tags(self):
         """
