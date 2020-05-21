@@ -20,11 +20,7 @@ class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Tag.objects.all(),
         many=True,
     )
-    owner = serializers.HyperlinkedRelatedField(
-        view_name='marcador_api:user-detail',
-        lookup_field='username',
-        read_only=True,
-    )
+
     date_created = serializers.DateTimeField(read_only=True)
     date_updated = serializers.DateTimeField(read_only=True)
 
@@ -33,7 +29,8 @@ class BookmarkSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'id', 'bookmark_url', 'title', 'description', 'is_public',
                   'date_created', 'date_updated', 'owner', 'tags']
         extra_kwargs = {
-            'url': {'view_name': 'marcador_api:bookmark-detail'}
+            'url': {'view_name': 'marcador_api:bookmark-detail'},
+            'owner': {'view_name': 'marcador_api:user-detail', 'lookup_field': 'username', 'read_only': 'True'},
         }
 
 
