@@ -278,3 +278,89 @@ class BookmarkViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['bookmark_url'], 'https://www.example.com/')
         self.assertEqual(response.data['title'], 'Example')
+
+
+class UserViewSetTestCase(APITestCase):
+    list_view = 'marcador_api:user-list'
+    detail_view = 'marcador_api:user-detail'
+    bookmarks_view = 'marcador_api:user-bookmarks'
+
+    def setUp(self):
+        self.user = User.objects.create(username='test', password='testpass')
+        self.superuser = User.objects.create(
+            username='admin',
+            password='adminpass',
+            is_superuser=True,
+        )
+        self.test_tag = Tag.objects.create(name='test')
+        self.public = Bookmark.objects.create(
+            bookmark_url='http://example.com/',
+            title='example',
+            description='This is just an example',
+            owner=self.user,
+        )
+        self.public.tags.add(self.test_tag)
+        self.private = Bookmark.objects.create(
+            bookmark_url='http://example.co.uk/',
+            title='example uk',
+            is_public=False,
+            owner=self.user,
+        )
+        self.private.tags.add(self.test_tag)
+
+    def test_user_can_read_users(self):
+        """
+        A user can retrieve a list of users.
+        """
+        response = self.client.get(reverse(self.list_view))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def test_user_can_read_user(self):
+        """
+        A user can retrieve a user.
+        """
+        response = self.client.get(
+            reverse(self.detail_view, kwargs={'username': 'test'})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['username'], 'test')
+        self.assertEqual(len(response.data['bookmarks']), 1)
+        self.assertEqual(response.data['bookmarks'][0]['title'], 'example')
+
+    def test_user_can_read_users_public_bookmarks(self):
+        """
+        A user can retrieve the public bookmarks for another user.
+        """
+        response = self.client.get(
+            reverse(self.bookmarks_view, kwargs={'username': 'test'})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['title'], 'example')
+
+    def test_user_can_read_own_bookmarks(self):
+        """
+        A user can retrieve all of his bookmarks.
+        """
+        self.client.force_login(user=self.user)
+        response = self.client.get(
+            reverse(self.bookmarks_view, kwargs={'username': 'test'})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['title'], 'example uk')
+        self.assertEqual(response.data[1]['title'], 'example')
+
+    def test_superuser_can_read_all_bookmarks(self):
+        """
+        A superuser can retrieve all bookmarks belonging to any user.
+        """
+        self.client.force_login(user=self.superuser)
+        response = self.client.get(
+            reverse(self.bookmarks_view, kwargs={'username': 'test'})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['title'], 'example uk')
+        self.assertEqual(response.data[1]['title'], 'example')
