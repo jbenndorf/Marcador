@@ -31,15 +31,20 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'marcador',
+    # third-party apps
     'crispy_forms',
+    'django_filters',
     'rest_framework',
+    # own apps
+    'marcador',
+    'marcador_api',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +56,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+}
 
 ROOT_URLCONF = 'mysite.urls'
 
@@ -112,7 +123,7 @@ TIME_ZONE = 'UTC'
 
 LOGIN_URL = 'mysite_login'
 LOGOUT_URL = 'mysite_logout'
-LOGIN_REDIRECT_URL = 'marcador_bookmark_list'
+LOGIN_REDIRECT_URL = 'bookmark-list'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 USE_I18N = True

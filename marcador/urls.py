@@ -2,25 +2,31 @@ from django.conf.urls import url
 
 from . import views
 
+
 urlpatterns = [
     url(
+        r'^$',
+        views.BookmarkList.as_view(),
+        name='bookmark-list',
+    ),
+    url(
         r'^user/(?P<username>[-\w]+)/$',
-        views.bookmark_user,
-        name='marcador_bookmark_user'
+        views.UserBookmarkList.as_view(),
+        name='bookmark-user',
     ),
     url(
         r'^create/$',
-        views.bookmark_create,
-        name='marcador_bookmark_create'
+        views.BookmarkCreate.as_view(),
+        name='bookmark-create',
     ),
     url(
         r'^edit/(?P<pk>\d+)/$',
-        views.bookmark_edit,
-        name='marcador_bookmark_edit'
+        views.BookmarkUpdate.as_view(),
+        name='bookmark-edit',
     ),
     url(
-        r'^$',
-        views.bookmark_list,
-        name='marcador_bookmark_list'
-    ),
+        r'^delete/(?P<pk>\d+)/$',
+        views.BookmarkDelete.as_view(),
+        name='bookmark-delete',
+    )
 ]
