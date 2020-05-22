@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from marcador.models import Bookmark, Tag
+from ..models import Bookmark, Tag
 
 
 class BookmarkListTestCase(TestCase):

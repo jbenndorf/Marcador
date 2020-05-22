@@ -29,8 +29,10 @@ class Bookmark(models.Model):
     is_public = models.BooleanField('public', default=True)
     date_created = models.DateTimeField('date created')
     date_updated = models.DateTimeField('date updated')
-    owner = models.ForeignKey(User, verbose_name='owner',
-        related_name='bookmarks')
+    owner = models.ForeignKey(
+        User, verbose_name='owner',
+        related_name='bookmarks'
+    )
     tags = models.ManyToManyField(Tag, blank=True)
 
     objects = models.Manager()
