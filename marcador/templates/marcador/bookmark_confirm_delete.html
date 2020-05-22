@@ -16,8 +16,14 @@
       <p>Are you sure you want to delete the bookmark <b>{{ bookmark.title }}</b> <i>({{ bookmark.bookmark_url }})</i>?</p>
     <p>
       <button type="submit" class="btn btn-danger">Delete</button>
-      <a href="{% url 'bookmark-list' %}"
-         role="button" class="btn btn-default">Go back</a>
+      <a {% if 'login' in request.META.HTTP_REFERER %}
+         href="{% url 'bookmark-list' %}"
+         {% elif request.META.HTTP_REFERER %}
+         href="{{ request.META.HTTP_REFERER }}"
+         {% else %}
+         href="{% url 'bookmark-list' %}"
+         {% endif %}
+         role="button" class="btn btn-default">Cancel</a>
     </p>
   </form>
 {% endblock %}
