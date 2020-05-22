@@ -9,6 +9,14 @@ from django_filters.views import FilterView
 from marcador_api.filters import BookmarkFilter
 from .models import Bookmark
 
+__all__ = (
+    'BookmarkList',
+    'UserBookmarkList',
+    'BookmarkCreate',
+    'BookmarkUpdate',
+    'BookmarkDelete',
+)
+
 
 class BookmarkList(FilterView):
     model = Bookmark
