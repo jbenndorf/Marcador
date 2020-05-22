@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 coverage = "*"
+ipython = "*"
 
 [packages]
 Django = "==1.11.28"
