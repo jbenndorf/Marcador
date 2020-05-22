@@ -37,14 +37,14 @@ class TagViewSetTestCase(APITestCase):
         Not authenticated users should be able to perform the detail
         operation on the endpoint tags.
         """
-        response = self.client.get(reverse(self.detail, kwargs={'pk': 1}))
+        response = self.client.get(reverse(self.detail_view, kwargs={'pk': 1}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
 
     def test_not_authenticated_create_tags(self):
         """
         Not authenticated users should not be able to perform the create
-        operation on the endpoint tags
+        operation on the endpoint tags.
         """
         response = self.client.post(
             reverse(self.list_view),
@@ -55,7 +55,7 @@ class TagViewSetTestCase(APITestCase):
     def test_not_authenticated_update_tags(self):
         """
         Not authenticated users should not be able to perform the update
-        operation on the endpoint tags
+        operation on the endpoint tags.
         """
         response = self.client.put(
             reverse(self.detail_view, kwargs={'pk': 1}),
@@ -69,7 +69,7 @@ class TagViewSetTestCase(APITestCase):
         operation on the endpoint tags
         """
         response = self.client.post(
-            reverse(self.detail, kwargs={'pk': 1}),
+            reverse(self.detail_view, kwargs={'pk': 1}),
             {'name': 'delete'},
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -90,7 +90,7 @@ class TagViewSetTestCase(APITestCase):
         operation on the endpoint tags
         """
         self.client.force_login(user=self.user)
-        response = self.client.get(reverse(self.detail, kwargs={'pk': 1}))
+        response = self.client.get(reverse(self.detail_view, kwargs={'pk': 1}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
 
@@ -113,7 +113,7 @@ class TagViewSetTestCase(APITestCase):
         """
         self.client.force_login(user=self.user)
         response = self.client.post(
-            reverse(self.list),
+            reverse(self.list_view),
             {'name': 'update'}
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -125,7 +125,7 @@ class TagViewSetTestCase(APITestCase):
         """
         self.client.force_login(user=self.user)
         response = self.client.post(
-            reverse(self.list),
+            reverse(self.list_view),
             {'name': 'delete'}
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -230,15 +230,28 @@ class BookmarkViewSetTestCase(APITestCase):
         )
         self.private_b.tags.add(self.test_tag_b)
 
-    def test_user_can_read_public_bookmarks(self):
+    def test_not_authenticated_read_public_bookmarks(self):
         """
-        All users should be able to read the public bookmarks.
+        Not authenticated users should be able to read public bookmarks.
         """
         response = self.client.get(reverse(self.list_view))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
 
-    def test_user_can_read_public_bookmark(self):
+# Unsure of how to test for filtering
+
+    def test_not_authenticated_can_filter_bookmarks(self):
+        """
+        All users should be able to filter through bookmarks.
+        """
+        response = self.client.get(
+            reverse(self.list_view),
+            {'description': 'une example'}
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_not_authenticated_read_public_bookmark(self):
         """
         All users should be able to read a public bookmark.
         """
@@ -248,17 +261,109 @@ class BookmarkViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], 'example')
 
-    def test_user_cannot_read_private_bookmark(self):
+# Should be HTTP_403_FORBIDDEN but responds with HTTP_404_NOT_FOUND
+    def test_not_authenticated_cannot_read_private_bookmark(self):
         """
-        Users should not be able to read a private
-        bookmark that doesn't belong to them.
+        Not authenticated users should not be able to read a private
+        bookmark.
         """
         response = self.client.get(
             reverse(self.detail_view, kwargs={'pk': 2})
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_user_can_edit_own_bookmark(self):
+    def test_not_authenticated_cannot_create_bookmark(self):
+        """
+        Not authenticated users should not be able to create a bookmark.
+        """
+        response = self.client.post(
+            reverse(self.list_view),
+            {'bookmark_url': 'https://www.test.com/', 'title': 'Test'}
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_not_authenticated_cannot_edit_bookmark(self):
+        """
+        Not authenticated users should not be able to edit a bookmark.
+        """
+        response = self.client.put(
+            reverse(self.detail_view, kwargs={'pk': 1}),
+            {'bookmark_url': 'https://www.example.com/', 'title': 'Example'}
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_not_authenticated_cannot_delete_bookmark(self):
+        """
+        Not authenticated users should not be able to delete a bookmark.
+        """
+        response = self.client.put(
+            reverse(self.detail_view, kwargs={'pk': 1}),
+            {'name': 'delete'}
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+# Authenticated-related tests
+
+    def test_authenticated_can_read_own_public_bookmarks(self):
+        """
+        Authenticated users should be able to read their own public bookmark.
+        """
+        self.client.force_login(user=self.user_a)
+        response = self.client.get(
+            reverse(self.detail_view, kwargs={'pk': 1})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['title'], 'example')
+
+# Response should be HTTP_200_OK, but is HTTP_404_NOT_FOUND
+    def test_authenticated_can_read_own_private_bookmark(self):
+        """
+        Authenticated users should be able to read their own private bookmark.
+        """
+        self.client.force_login(user=self.user_a)
+        response = self.client.get(
+            reverse(self.detail_view, kwargs={'pk': 2})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['title'], 'example uk')
+
+# Unsure how how to test for filtering
+
+    def test_authenticated_can_filter_public_bookmarks(self):
+        """
+        Authenticated users should be able to filter through bookmarks.
+        """
+        self.client.force_login(user=self.user_a)
+        response = self.client.get(
+            reverse(self.list_view),
+            {'title': 'example'}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_authenticated_can_create_bookmark(self):
+        """
+        Authenticated users should be able to create a bookmark.
+        """
+        self.client.force_login(user=self.user_a)
+        response = self.client.post(
+            reverse(self.list_view),
+            {'bookmark_url': 'https://www.test.com/', 'title': 'Test'}
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_authenticated_can_delete_own_bookmark(self):
+        """
+        An authenticated user should be able to delete his/her own
+        bookmark.
+        """
+        self.client.force_login(user=self.user_a)
+        response = self.client.delete(
+            reverse(self.detail_view, kwargs={'pk': 1})
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_authenticated_can_edit_own_public_bookmark(self):
         """
         An authenticated user should be able to edit his/her own
         bookmark.
@@ -272,9 +377,24 @@ class BookmarkViewSetTestCase(APITestCase):
         self.assertEqual(response.data['bookmark_url'], 'https://www.example.com/')
         self.assertEqual(response.data['title'], 'Example')
 
-    def test_user_cannot_edit_foreign_bookmark(self):
+    # Response should be HTTP_200_OK, but is HTTP_404_NOT_FOUND
+    def test_authenticated_can_edit_own_private_bookmark(self):
         """
         An authenticated user should be able to edit his/her own
+        bookmark.
+        """
+        self.client.force_login(user=self.user_a)
+        response = self.client.put(
+            reverse(self.detail_view, kwargs={'pk': 2}),
+            {'bookmark_url': 'https://www.example.co.uk/', 'title': 'Example UK'}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['bookmark_url'], 'https://www.example.co.uk/')
+        self.assertEqual(response.data['title'], 'Example UK')
+
+    def test_authenticated_cannot_edit_foreign_bookmark(self):
+        """
+        An authenticated user should not be able to edit a foreign
         bookmark.
         """
         self.client.force_login(user=self.user_b)
@@ -284,9 +404,67 @@ class BookmarkViewSetTestCase(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+# Response should be HTTP_403_FORBIDDEN, but is HTTP_404_NOT_FOUND
+    def test_authenticated_cannot_read_foreign_private_bookmark(self):
+        """
+        Authenticated users should not be able to read a foreign, private bookmark.
+        """
+        self.client.force_login(user=self.user_a)
+        response = self.client.get(
+            reverse(self.detail_view, kwargs={'pk': 4})
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_authenticated_cannot_delete_foreign_bookmark(self):
+        """
+        An authenticated user should not be able to delete a foreign
+        bookmark.
+        """
+        self.client.force_login(user=self.user_b)
+        response = self.client.delete(
+            reverse(self.detail_view, kwargs={'pk': 1})
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    # Superuser-related tests
+
+    def test_superuser_can_read_public_bookmarks(self):
+        """
+        A superuser should be able to delete a public bookmark from any
+        user.
+        """
+        self.client.force_login(user=self.superuser)
+        response = self.client.get(
+            reverse(self.list_view)
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+# Response should be HTTP_200_OK, but is HTTP_404_NOT_FOUND
+    def test_superuser_can_read_private_bookmark(self):
+        """
+        A superuser should be able to read a private bookmark from any
+        user.
+        """
+        self.client.force_login(user=self.superuser)
+        response = self.client.get(
+            reverse(self.detail_view, kwargs={'pk': 2})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_superuser_can_create_bookmark(self):
+        """
+        A superuser should be able to create a bookmark.
+        """
+        self.client.force_login(user=self.superuser)
+        response = self.client.post(
+            reverse(self.list_view),
+            {'bookmark_url': 'https://www.test.com/', 'title': 'Test'}
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_superuser_can_edit_bookmark(self):
         """
-        A superuser should be able to edit a public bookmark from any
+        A superuser should be able to edit a bookmark from any
         user.
         """
         self.client.force_login(user=self.superuser)
@@ -297,3 +475,26 @@ class BookmarkViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['bookmark_url'], 'https://www.example.com/')
         self.assertEqual(response.data['title'], 'Example')
+
+    def test_superuser_can_delete_public_bookmark(self):
+        """
+        A superuser should be able to delete a public bookmark from any
+        user.
+        """
+        self.client.force_login(user=self.superuser)
+        response = self.client.delete(
+            reverse(self.detail_view, kwargs={'pk': 1})
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+# Response should be HTTP_204_NO_CONTENT but is HTTP_404
+    def test_superuser_can_delete_private_bookmark(self):
+        """
+        A superuser should be able to delete a private bookmark from any
+        user.
+        """
+        self.client.force_login(user=self.superuser)
+        response = self.client.delete(
+            reverse(self.detail_view, kwargs={'pk': 2})
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
