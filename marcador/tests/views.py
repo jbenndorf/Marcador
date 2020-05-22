@@ -145,7 +145,7 @@ class BookmarkUpdateTestCase(TestCase):
         """
         self.client.force_login(user=User.objects.get(username='dummy'))
         response = self.client.get('/edit/3/')
-        self.assertRedirects(response, '/login/?next=/edit/3/')
+        self.assertEqual(response.status_code, 403)
 
     def test_superuser_get_form_another_bookmark(self):
         """
@@ -209,7 +209,7 @@ class BookmarkDeleteTestCase(TestCase):
         """
         self.client.force_login(user=User.objects.get(username='dummy'))
         response = self.client.get('/delete/3/')
-        self.assertRedirects(response, '/login/?next=/delete/3/')
+        self.assertEqual(response.status_code, 403)
 
     def test_superuser_get_form_another_bookmark(self):
         """

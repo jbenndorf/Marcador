@@ -1,5 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -68,15 +69,17 @@ class BookmarkCreate(LoginRequiredMixin, CreateView):
         return context
 
 
-class BookmarkUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class BookmarkUpdate(LoginRequiredMixin, UpdateView):
     model = Bookmark
     fields = ['bookmark_url', 'title', 'description', 'is_public', 'tags']
     success_url = reverse_lazy('bookmark-list')
 
-    def test_func(self):
-        bookmark = self.get_object()
+    def get_object(self, queryset=None):
+        bookmark = super(BookmarkUpdate, self).get_object(queryset)
         user = self.request.user
-        return bookmark.owner == user or user.is_superuser
+        if bookmark.owner != user and not user.is_superuser:
+            raise PermissionDenied
+        return bookmark
 
     def get_context_data(self, **kwargs):
         context = super(BookmarkUpdate, self).get_context_data(**kwargs)
@@ -84,12 +87,14 @@ class BookmarkUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
 
-class BookmarkDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class BookmarkDelete(LoginRequiredMixin, DeleteView):
     model = Bookmark
     context_object_name = 'bookmark'
     success_url = reverse_lazy('bookmark-list')
 
-    def test_func(self):
-        bookmark = self.get_object()
+    def get_object(self, queryset=None):
+        bookmark = super(BookmarkDelete, self).get_object(queryset)
         user = self.request.user
-        return bookmark.owner == user or user.is_superuser
+        if bookmark.owner != user and not user.is_superuser:
+            raise PermissionDenied
+        return bookmark
