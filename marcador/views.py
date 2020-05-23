@@ -1,63 +1,100 @@
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView, DeleteView
 
-from .forms import BookmarkForm
+from django_filters.views import FilterView
+
+from marcador_api.filters import BookmarkFilter
 from .models import Bookmark
 
-
-def bookmark_list(request):
-    bookmarks = Bookmark.public.all()
-    if request.GET.get('tag'):
-        bookmarks = bookmarks.filter(tags__name=request.GET['tag'])
-    context = {'bookmarks': bookmarks}
-    return render(request, 'marcador/bookmark_list.html', context)
-
-
-def bookmark_user(request, username):
-    user = get_object_or_404(User, username=username)
-    if request.user == user:
-        bookmarks = user.bookmarks.all()
-    else:
-        bookmarks = Bookmark.public.filter(owner__username=username)
-    if request.GET.get('tag'):
-        bookmarks = bookmarks.filter(tags__name=request.GET['tag'])
-    context = {'bookmarks': bookmarks, 'owner': user}
-    return render(request, 'marcador/bookmark_user.html', context)
+__all__ = (
+    'BookmarkList',
+    'UserBookmarkList',
+    'BookmarkCreate',
+    'BookmarkUpdate',
+    'BookmarkDelete',
+)
 
 
-@login_required
-def bookmark_create(request):
-    if request.method == 'POST':
-        form = BookmarkForm(data=request.POST)
-        if form.is_valid():
-            bookmark = form.save(commit=False)
-            bookmark.owner = request.user
-            bookmark.save()
-            form.save_m2m()
-            return redirect('marcador_bookmark_user',
-                username=request.user.username)
-    else:
-        form = BookmarkForm()
-    context = {'form': form, 'create': True}
-    return render(request, 'marcador/form.html', context)
+class BookmarkList(FilterView):
+    model = Bookmark
+    context_object_name = 'bookmarks'
+    template_name = 'marcador/bookmark_list.html'
+    filterset_class = BookmarkFilter
+
+    def get_queryset(self):
+        bookmarks = Bookmark.public.all()
+        return bookmarks
 
 
-@login_required
-def bookmark_edit(request, pk):
-    bookmark = get_object_or_404(Bookmark, pk=pk)
-    if bookmark.owner != request.user and not request.user.is_superuser:
-        raise PermissionDenied
-    if request.method == 'POST':
-        form = BookmarkForm(instance=bookmark, data=request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('marcador_bookmark_user',
-                username=request.user.username)
-    else:
-        form = BookmarkForm(instance=bookmark)
-    context = {'form': form, 'create': False}
-    return render(request, 'marcador/form.html', context)
+class UserBookmarkList(FilterView):
+    context_object_name = 'bookmarks'
+    template_name = 'marcador/bookmark_user.html'
+    filterset_class = BookmarkFilter
+
+    def __init__(self):
+        self.user = User.objects.none()
+        super(UserBookmarkList, self).__init__()
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        self.user = get_object_or_404(User, username=username)
+        if self.request.user == self.user or self.request.user.is_superuser:
+            bookmarks = self.user.bookmarks.all()
+        else:
+            bookmarks = Bookmark.public.filter(owner__username=username)
+        return bookmarks
+
+    def get_context_data(self, **kwargs):
+        context = super(UserBookmarkList, self).get_context_data(**kwargs)
+        context['owner'] = self.user
+        return context
 
 
+class BookmarkCreate(LoginRequiredMixin, CreateView):
+    model = Bookmark
+    fields = ['bookmark_url', 'title', 'description', 'is_public', 'tags']
+    success_url = reverse_lazy('bookmark-list')
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super(BookmarkCreate, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(BookmarkCreate, self).get_context_data(**kwargs)
+        context['create'] = True
+        return context
+
+
+class BookmarkUpdate(LoginRequiredMixin, UpdateView):
+    model = Bookmark
+    fields = ['bookmark_url', 'title', 'description', 'is_public', 'tags']
+    success_url = reverse_lazy('bookmark-list')
+
+    def get_object(self, queryset=None):
+        bookmark = super(BookmarkUpdate, self).get_object(queryset)
+        user = self.request.user
+        if bookmark.owner != user and not user.is_superuser:
+            raise PermissionDenied
+        return bookmark
+
+    def get_context_data(self, **kwargs):
+        context = super(BookmarkUpdate, self).get_context_data(**kwargs)
+        context['create'] = False
+        return context
+
+
+class BookmarkDelete(LoginRequiredMixin, DeleteView):
+    model = Bookmark
+    context_object_name = 'bookmark'
+    success_url = reverse_lazy('bookmark-list')
+
+    def get_object(self, queryset=None):
+        bookmark = super(BookmarkDelete, self).get_object(queryset)
+        user = self.request.user
+        if bookmark.owner != user and not user.is_superuser:
+            raise PermissionDenied
+        return bookmark

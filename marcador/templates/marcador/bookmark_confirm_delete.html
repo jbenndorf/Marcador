@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+  Delete bookmark
+{% endblock %}
+
+{% block heading %}
+  <h2>Delete bookmark</h2>
+{% endblock %}
+
+{% block content %}
+  <form action="" method="post" accept-charset="utf-8">
+    {{ form|crispy }}
+    {% csrf_token %}
+      <p>Are you sure you want to delete the bookmark <b>{{ bookmark.title }}</b> <i>({{ bookmark.bookmark_url }})</i>?</p>
+    <p>
+      <button type="submit" class="btn btn-danger">Delete</button>
+      <a {% if 'login' in request.META.HTTP_REFERER %}
+         href="{% url 'bookmark-list' %}"
+         {% elif request.META.HTTP_REFERER %}
+         href="{{ request.META.HTTP_REFERER }}"
+         {% else %}
+         href="{% url 'bookmark-list' %}"
+         {% endif %}
+         role="button" class="btn btn-default">Cancel</a>
+    </p>
+  </form>
+{% endblock %}

@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.timezone import now
 
+__all__ = ('Tag', 'Bookmark')
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -29,8 +31,10 @@ class Bookmark(models.Model):
     is_public = models.BooleanField('public', default=True)
     date_created = models.DateTimeField('date created')
     date_updated = models.DateTimeField('date updated')
-    owner = models.ForeignKey(User, verbose_name='owner',
-        related_name='bookmarks')
+    owner = models.ForeignKey(
+        User, verbose_name='owner',
+        related_name='bookmarks'
+    )
     tags = models.ManyToManyField(Tag, blank=True)
 
     objects = models.Manager()

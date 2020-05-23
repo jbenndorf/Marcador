@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 # Application definition
 
@@ -43,6 +46,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_filters',
     'rest_framework',
+    'coverage',
     # own apps
     'marcador',
     'marcador_api',
@@ -56,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -118,7 +123,7 @@ TIME_ZONE = 'UTC'
 
 LOGIN_URL = 'mysite_login'
 LOGOUT_URL = 'mysite_logout'
-LOGIN_REDIRECT_URL = 'marcador_bookmark_list'
+LOGIN_REDIRECT_URL = 'bookmark-list'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 USE_I18N = True

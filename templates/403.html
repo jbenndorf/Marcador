@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Forbidden{% endblock %}
+
+{% block heading %}
+<h1>403 Forbidden</h1>
+{% endblock %}
+
+{% block content %}
+<div class="well well-sm">
+  <p class="text-warning">You don't have permissions to perform this operation.</p>
+  <a href="{% url 'bookmark-list' %}" class="btn btn-default" role="button">
+    Go to the homepage
+  </a>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

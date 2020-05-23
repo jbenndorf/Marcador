@@ -11,12 +11,14 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def tagcloud(context, owner=None):
-    url = reverse('marcador_bookmark_list')
+    url = reverse('bookmark-list')
     filters = {'bookmark__is_public': True}
 
     if owner is not None:
-        url = reverse('marcador_bookmark_user',
-            kwargs={'username': owner.username})
+        url = reverse(
+            'bookmark-user',
+            kwargs={'username': owner.username}
+        )
         filters['bookmark__owner'] = owner
     if context['user'] == owner:
         del filters['bookmark__is_public']
@@ -24,5 +26,5 @@ def tagcloud(context, owner=None):
     tags = Tag.objects.filter(**filters)
     tags = tags.annotate(count=models.Count('bookmark'))
     tags = tags.order_by('name').values_list('name', 'count')
-    fmt = '<a href="%s?tag={0}">{0} ({1})</a>' % url
+    fmt = '<a href="%s?tags={0}">{0} ({1})</a>' % url
     return format_html_join(', ', fmt, tags)
