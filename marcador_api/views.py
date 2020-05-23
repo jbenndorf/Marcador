@@ -10,7 +10,10 @@ from rest_framework.response import Response
 
 from marcador.models import Bookmark, Tag
 from .filters import BookmarkFilter
-from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
+from .permissions import (
+    IsOwnerOrReadOnly,
+    IsSuperuserOrReadOnly
+)
 from .serializers import (
     BookmarkSerializer,
     NestedBookmarkSerializer,
@@ -42,9 +45,7 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     """
     queryset = Bookmark.public.all()
     serializer_class = BookmarkSerializer
-    permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly
     ]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_class = BookmarkFilter
