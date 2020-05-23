@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import Prefetch, Q
 
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import exceptions
 from rest_framework import filters
 from rest_framework import permissions
 from rest_framework import viewsets
@@ -10,7 +11,7 @@ from rest_framework.response import Response
 
 from marcador.models import Bookmark, Tag
 from .filters import BookmarkFilter
-from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly, IsPublicOrOwnerOrSuperuser
 from .serializers import (
     BookmarkSerializer,
     NestedBookmarkSerializer,
@@ -43,21 +44,38 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     serializer_class = BookmarkSerializer
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly
+        IsOwnerOrReadOnly,
+        IsPublicOrOwnerOrSuperuser
     ]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_class = BookmarkFilter
     search_fields = ['title', 'bookmark_url', 'description']
 
-    def get_queryset(self):
+    def list(self, request, *args, **kwargs):
         if not self.request.user.is_authenticated:
-            return Bookmark.public.all()
+            bookmarks = Bookmark.public.all()
         elif self.request.user.is_superuser:
-            return self.queryset
+            bookmarks = self.queryset
         else:
-            return Bookmark.objects.filter(
+            bookmarks = Bookmark.objects.filter(
                 Q(owner=self.request.user) | Q(is_public=True)
             )
+        queryset = self.filter_queryset(bookmarks)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     if not instance.is_public and instance.owner != request.user and not request.user.is_superuser:
+    #         raise exceptions.PermissionDenied()
+    #     serializer = self.get_serializer(instance)
+    #     return Response(serializer.data)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
