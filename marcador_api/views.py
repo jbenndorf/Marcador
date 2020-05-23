@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -39,7 +39,7 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     When filtering by 'date created' or 'date updated', please use the following ISO 8601 format:
     YYYY-MM-DD hh:mm:ss
     """
-    queryset = Bookmark.public.all()
+    queryset = Bookmark.objects.all()
     serializer_class = BookmarkSerializer
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
@@ -48,6 +48,16 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_class = BookmarkFilter
     search_fields = ['title', 'bookmark_url', 'description']
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Bookmark.public.all()
+        elif self.request.user.is_superuser:
+            return self.queryset
+        else:
+            return Bookmark.objects.filter(
+                Q(owner=self.request.user) | Q(is_public=True)
+            )
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -64,12 +74,24 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'username'
 
     def get_queryset(self):
-        return self.queryset.prefetch_related(
-            Prefetch(
-                'bookmarks',
-                Bookmark.public.all(),
+        if not self.request.user.is_authenticated:
+            return self.queryset.prefetch_related(
+                Prefetch(
+                    'bookmarks',
+                    Bookmark.public.all(),
+                )
             )
-        )
+        elif self.request.user.is_superuser:
+            return self.queryset
+        else:
+            return self.queryset.prefetch_related(
+                Prefetch(
+                    'bookmarks',
+                    Bookmark.objects.filter(
+                        Q(owner=self.request.user) | Q(is_public=True)
+                    )
+                )
+            )
 
     @action(detail=True)
     def bookmarks(self, request, *args, **kwargs):
