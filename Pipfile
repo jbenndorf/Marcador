@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 coverage = "*"
 ipython = "*"
+django-debug-toolbar = "*"
 
 [packages]
 Django = "==1.11.28"
@@ -13,3 +14,4 @@ pytz = "*"
 django-crispy-forms = "*"
 djangorestframework = "*"
 django-filter = "*"
+markdown = "*"
