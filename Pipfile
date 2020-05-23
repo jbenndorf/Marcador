@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 coverage = "*"
 ipython = "*"
-django-debug-toolbar = "==1.8"
+django-debug-toolbar = "*"
 
 [packages]
 Django = "==1.11.28"
