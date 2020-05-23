@@ -30,7 +30,7 @@ class TagViewSetTestCase(APITestCase):
         """
         response = self.client.get(reverse(self.list_view))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
     def test_not_authenticated_can_read_a_tag(self):
         """
@@ -82,7 +82,7 @@ class TagViewSetTestCase(APITestCase):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse(self.list_view))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
     def test_authenticated_can_read_a_tag(self):
         """
@@ -138,7 +138,7 @@ class TagViewSetTestCase(APITestCase):
         self.client.force_login(user=self.superuser)
         response = self.client.get(reverse(self.list_view))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
     def test_superuser_can_read_a_tags(self):
         """
@@ -238,7 +238,7 @@ class BookmarkViewSetTestCase(APITestCase):
         """
         response = self.client.get(reverse(self.list_view))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data['results']), 2)
 
     def test_not_authenticated_can_read_a_public_bookmark(self):
         """
@@ -304,7 +304,7 @@ class BookmarkViewSetTestCase(APITestCase):
         self.client.force_login(user=self.user_a)
         response = self.client.get(reverse(self.list_view))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
+        self.assertEqual(len(response.data['results']), 3)
 
     def test_authenticated_can_read_an_own_private_bookmark(self):
         """
@@ -527,7 +527,7 @@ class BookmarkViewSetTestCase(APITestCase):
             f'{reverse(self.list_view)}?search=just'
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
     def test_filter_bookmarks_by_tag(self):
         """
@@ -539,7 +539,7 @@ class BookmarkViewSetTestCase(APITestCase):
             f'{reverse(self.list_view)}?tags={tag.name}'
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
 
 class UserViewSetTestCase(APITestCase):
