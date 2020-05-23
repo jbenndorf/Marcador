@@ -22,8 +22,15 @@ from .serializers import (
 
 class TagViewSet(viewsets.ModelViewSet):
     """
-    This Tag View Set automatically provides 'list', 'create' and 'retrieve'
-    actions for authenticated users.
+    This **Tag View Set** automatically provides the following actions:
+
+     - `list`
+     - `create`
+     - `retrieve`
+     - `update` and `partial_update`
+     - `destroy`
+
+    Write operations are permitted only to superusers.
     """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -38,7 +45,8 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     actions for authenticated users. Owners of bookmarks can perform 'update' and 'delete' actions.
 
     When filtering by 'date created' or 'date updated', please use the following ISO 8601 format:
-    YYYY-MM-DD hh:mm:ss
+
+    *YYYY-MM-DD hh:mm:ss*
     """
     queryset = Bookmark.objects.all()
     serializer_class = BookmarkSerializer
