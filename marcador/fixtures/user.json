@@ -1,0 +1,27 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "superuser",
+      "password": "superpass",
+      "is_superuser": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "dummy",
+      "password": "dummypass"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "username": "test",
+      "password": "testpass"
+    }
+  }
+]

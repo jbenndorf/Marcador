@@ -4,9 +4,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+coverage = "*"
+ipython = "*"
 
 [packages]
-django = "==1.11.28"
+Django = "==1.11.28"
 pytz = "*"
 django-crispy-forms = "*"
 djangorestframework = "*"

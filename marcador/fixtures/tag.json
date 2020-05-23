@@ -3,56 +3,21 @@
     "model": "marcador.tag",
     "pk": 1,
     "fields": {
-      "name": "social media"
+      "name": "testtag"
+    }
+  },
+  {
+    "model": "marcador.tag",
+    "pk": 2,
+    "fields": {
+      "name": "dummytag"
     }
   },
   {
     "model": "marcador.tag",
     "pk": 3,
     "fields": {
-      "name": "books"
-    }
-  },
-  {
-    "model": "marcador.tag",
-    "pk": 4,
-    "fields": {
-      "name": "electronics"
-    }
-  },
-  {
-    "model": "marcador.tag",
-    "pk": 5,
-    "fields": {
-      "name": "shopping"
-    }
-  },
-  {
-    "model": "marcador.tag",
-    "pk": 6,
-    "fields": {
-      "name": "gifts"
-    }
-  },
-  {
-    "model": "marcador.tag",
-    "pk": 7,
-    "fields": {
-      "name": "interesting"
-    }
-  },
-  {
-    "model": "marcador.tag",
-    "pk": 8,
-    "fields": {
-      "name": "new"
-    }
-  },
-  {
-    "model": "marcador.tag",
-    "pk": 9,
-    "fields": {
-      "name": "education"
+      "name": "exampletag"
     }
   }
 ]

@@ -3,14 +3,16 @@
     "model": "marcador.bookmark",
     "pk": 1,
     "fields": {
-      "bookmark_url": "http://www.facebook.com",
-      "title": "Facebook",
-      "description": "Facebook",
+      "bookmark_url": "http://www.example.com",
+      "title": "Example",
+      "description": "just an example",
       "is_public": true,
       "date_created": "2020-05-09T00:30:49.595Z",
       "date_updated": "2020-05-09T00:30:49.595Z",
-      "owner": 1,
-      "tags": []
+      "owner": 2,
+      "tags": [
+        1
+      ]
     }
   },
   {
@@ -20,12 +22,12 @@
       "bookmark_url": "http://www.netflix.com",
       "title": "netflix",
       "description": "",
-      "is_public": true,
+      "is_public": false,
       "date_created": "2020-05-09T00:33:51.162Z",
       "date_updated": "2020-05-09T00:33:51.162Z",
-      "owner": 1,
+      "owner": 2,
       "tags": [
-        1
+        2
       ]
     }
   },
@@ -34,14 +36,15 @@
     "pk": 3,
     "fields": {
       "bookmark_url": "https://www.django-rest-framework.org/tutorial/quickstart/",
-      "title": "REST framework",
-      "description": "",
-      "is_public": false,
+      "title": "Django REST Framework",
+      "description": "A quickstart tutorial in Django REST Framework",
+      "is_public": true,
       "date_created": "2020-05-13T12:59:57.716Z",
       "date_updated": "2020-05-13T12:59:57.716Z",
-      "owner": 1,
+      "owner": 3,
       "tags": [
-        9
+        2,
+        3
       ]
     }
   },
@@ -57,92 +60,8 @@
       "date_updated": "2020-05-13T13:01:30.081Z",
       "owner": 1,
       "tags": [
-        4,
-        6,
-        5
-      ]
-    }
-  },
-  {
-    "model": "marcador.bookmark",
-    "pk": 5,
-    "fields": {
-      "bookmark_url": "https://www.thebookpeople.co.uk/",
-      "title": "book marketplace",
-      "description": "",
-      "is_public": true,
-      "date_created": "2020-05-13T13:03:11.521Z",
-      "date_updated": "2020-05-13T13:03:11.521Z",
-      "owner": 1,
-      "tags": [
-        3,
-        5
-      ]
-    }
-  },
-  {
-    "model": "marcador.bookmark",
-    "pk": 6,
-    "fields": {
-      "bookmark_url": "https://www.johnlewis.com/gifts/c500009",
-      "title": "John Lewis gifts",
-      "description": "",
-      "is_public": false,
-      "date_created": "2020-05-13T13:03:40.875Z",
-      "date_updated": "2020-05-13T13:03:40.875Z",
-      "owner": 1,
-      "tags": [
-        6
-      ]
-    }
-  },
-  {
-    "model": "marcador.bookmark",
-    "pk": 7,
-    "fields": {
-      "bookmark_url": "https://www.pinterest.com/",
-      "title": "Keep updated",
-      "description": "",
-      "is_public": true,
-      "date_created": "2020-05-13T13:04:30.763Z",
-      "date_updated": "2020-05-13T13:04:30.763Z",
-      "owner": 1,
-      "tags": [
-        8,
-        1
-      ]
-    }
-  },
-  {
-    "model": "marcador.bookmark",
-    "pk": 8,
-    "fields": {
-      "bookmark_url": "https://en.wikipedia.org/wiki/Electronics",
-      "title": "Description of electronics",
-      "description": "",
-      "is_public": true,
-      "date_created": "2020-05-13T13:05:24.666Z",
-      "date_updated": "2020-05-13T13:05:24.666Z",
-      "owner": 1,
-      "tags": [
-        4
-      ]
-    }
-  },
-  {
-    "model": "marcador.bookmark",
-    "pk": 9,
-    "fields": {
-      "bookmark_url": "https://www.pearson.com/uk/",
-      "title": "Pearson education",
-      "description": "",
-      "is_public": false,
-      "date_created": "2020-05-13T13:06:51.390Z",
-      "date_updated": "2020-05-13T13:06:51.390Z",
-      "owner": 1,
-      "tags": [
-        3,
-        9
+        1,
+        3
       ]
     }
   }

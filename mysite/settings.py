@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_filters',
     'rest_framework',
+    'coverage',
     # own apps
     'marcador',
     'marcador_api',

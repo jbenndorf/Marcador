@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -8,6 +9,14 @@ from django_filters.views import FilterView
 
 from marcador_api.filters import BookmarkFilter
 from .models import Bookmark
+
+__all__ = (
+    'BookmarkList',
+    'UserBookmarkList',
+    'BookmarkCreate',
+    'BookmarkUpdate',
+    'BookmarkDelete',
+)
 
 
 class BookmarkList(FilterView):
@@ -33,7 +42,7 @@ class UserBookmarkList(FilterView):
     def get_queryset(self):
         username = self.kwargs['username']
         self.user = get_object_or_404(User, username=username)
-        if self.request.user == self.user:
+        if self.request.user == self.user or self.request.user.is_superuser:
             bookmarks = self.user.bookmarks.all()
         else:
             bookmarks = Bookmark.public.filter(owner__username=username)
@@ -65,6 +74,13 @@ class BookmarkUpdate(LoginRequiredMixin, UpdateView):
     fields = ['bookmark_url', 'title', 'description', 'is_public', 'tags']
     success_url = reverse_lazy('bookmark-list')
 
+    def get_object(self, queryset=None):
+        bookmark = super(BookmarkUpdate, self).get_object(queryset)
+        user = self.request.user
+        if bookmark.owner != user and not user.is_superuser:
+            raise PermissionDenied
+        return bookmark
+
     def get_context_data(self, **kwargs):
         context = super(BookmarkUpdate, self).get_context_data(**kwargs)
         context['create'] = False
@@ -75,3 +91,10 @@ class BookmarkDelete(LoginRequiredMixin, DeleteView):
     model = Bookmark
     context_object_name = 'bookmark'
     success_url = reverse_lazy('bookmark-list')
+
+    def get_object(self, queryset=None):
+        bookmark = super(BookmarkDelete, self).get_object(queryset)
+        user = self.request.user
+        if bookmark.owner != user and not user.is_superuser:
+            raise PermissionDenied
+        return bookmark
