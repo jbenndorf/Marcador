@@ -577,7 +577,7 @@ class UserViewSetTestCase(APITestCase):
         """
         response = self.client.get(reverse(self.list_view))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data['results']), 2)
 
     def test_user_can_read_a_user(self):
         """
@@ -617,8 +617,8 @@ class UserViewSetTestCase(APITestCase):
             reverse(self.bookmarks_view, kwargs={'username': 'test'})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['title'], 'example')
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(response.data['results'][0]['title'], 'example')
 
     def test_user_can_read_own_bookmarks(self):
         """
@@ -629,9 +629,9 @@ class UserViewSetTestCase(APITestCase):
             reverse(self.bookmarks_view, kwargs={'username': 'test'})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]['title'], 'example uk')
-        self.assertEqual(response.data[1]['title'], 'example')
+        self.assertEqual(len(response.data['results']), 2)
+        self.assertEqual(response.data['results'][0]['title'], 'example uk')
+        self.assertEqual(response.data['results'][1]['title'], 'example')
 
     def test_superuser_can_read_all_bookmarks(self):
         """
@@ -644,6 +644,6 @@ class UserViewSetTestCase(APITestCase):
             reverse(self.bookmarks_view, kwargs={'username': 'test'})
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]['title'], 'example uk')
-        self.assertEqual(response.data[1]['title'], 'example')
+        self.assertEqual(len(response.data['results']), 2)
+        self.assertEqual(response.data['results'][0]['title'], 'example uk')
+        self.assertEqual(response.data['results'][1]['title'], 'example')

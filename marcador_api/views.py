@@ -95,7 +95,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     User instances are accessible by username.
     """
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('pk')
     serializer_class = UserSerializer
     lookup_field = 'username'
 
