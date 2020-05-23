@@ -572,15 +572,17 @@ class UserViewSetTestCase(APITestCase):
 
     def test_user_can_read_users(self):
         """
-        A user can retrieve a list of users.
+        All user should be able to perform the list action on the
+        endpoint users.
         """
         response = self.client.get(reverse(self.list_view))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
 
-    def test_user_can_read_user(self):
+    def test_user_can_read_a_user(self):
         """
-        A user can retrieve a user.
+        All users should be able to perform the retrieve action on the
+        endpoint users.
         """
         response = self.client.get(
             reverse(self.detail_view, kwargs={'username': 'test'})
@@ -590,9 +592,26 @@ class UserViewSetTestCase(APITestCase):
         self.assertEqual(len(response.data['bookmarks']), 1)
         self.assertEqual(response.data['bookmarks'][0]['title'], 'example')
 
+    def test_user_can_read_own_entry_with_all_bookmarks(self):
+        """
+        All users should be able to read their own entry with all
+        bookmarks.
+        """
+        self.client.force_login(user=self.user)
+        response = self.client.get(
+            reverse(self.detail_view, kwargs={'username': 'test'})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['username'], 'test')
+        self.assertEqual(len(response.data['bookmarks']), 2)
+        self.assertEqual(response.data['bookmarks'][0]['title'], 'example uk')
+        self.assertEqual(response.data['bookmarks'][1]['title'], 'example')
+
     def test_user_can_read_users_public_bookmarks(self):
         """
-        A user can retrieve the public bookmarks for another user.
+        All users should be able to perform the custom bookmarks action
+        on the endpoint users. They should be able to read only the
+        public bookmarks of another user.
         """
         response = self.client.get(
             reverse(self.bookmarks_view, kwargs={'username': 'test'})
@@ -603,7 +622,7 @@ class UserViewSetTestCase(APITestCase):
 
     def test_user_can_read_own_bookmarks(self):
         """
-        A user can retrieve all of his bookmarks.
+        All users should be able to read all of their bookmarks.
         """
         self.client.force_login(user=self.user)
         response = self.client.get(
@@ -616,7 +635,9 @@ class UserViewSetTestCase(APITestCase):
 
     def test_superuser_can_read_all_bookmarks(self):
         """
-        A superuser can retrieve all bookmarks belonging to any user.
+        Superusers should be able to perform the custom bookmark action
+        on the endpoint users. They should be able to read all
+        bookmarks.
         """
         self.client.force_login(user=self.superuser)
         response = self.client.get(
