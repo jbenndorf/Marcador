@@ -1,8 +1,5 @@
-from collections import OrderedDict
-
 from django.contrib.auth.models import User
 from django.db.models import Prefetch, Q
-from django.urls import NoReverseMatch
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import exceptions
@@ -11,7 +8,6 @@ from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 
 from marcador.models import Bookmark, Tag
 from .filters import BookmarkFilter
@@ -151,32 +147,3 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             context=context
         )
         return Response(serializer.data)
-
-    def get_extra_action_url_map(self):
-        """
-        Build a map of {names: urls} for the extra actions.
-
-        This method will noop if `detail` was not provided as a view initkwarg.
-        """
-        action_urls = OrderedDict()
-
-        # exit early if `detail` has not been provided
-        if self.detail is None:
-            return action_urls
-
-        # filter for the relevant extra actions
-        actions = [
-            action for action in self.get_extra_actions()
-            if action.detail == self.detail
-        ]
-
-        for action in actions:
-            try:
-                url_name = '%s:%s-%s' % ('marcador_api', self.basename, action.url_name)
-                url = reverse(url_name, self.args, self.kwargs, request=self.request)
-                view = self.__class__(**action.kwargs)
-                action_urls[view.get_view_name()] = url
-            except NoReverseMatch:
-                pass  # URL requires additional arguments, ignore
-
-        return action_urls
