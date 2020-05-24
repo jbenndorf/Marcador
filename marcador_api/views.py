@@ -11,7 +11,11 @@ from rest_framework.response import Response
 
 from marcador.models import Bookmark, Tag
 from .filters import BookmarkFilter
-from .permissions import IsOwnerOrReadOnly, IsSuperuserOrReadOnly, IsPublicOrOwnerOrSuperuser
+from .permissions import (
+    IsOwnerOrReadOnly,
+    IsSuperuserOrReadOnly,
+    IsPublicOrOwnerOrSuperuser
+)
 from .serializers import (
     BookmarkSerializer,
     NestedBookmarkSerializer,
@@ -41,10 +45,18 @@ class TagViewSet(viewsets.ModelViewSet):
 
 class BookmarkViewSet(viewsets.ModelViewSet):
     """
-    This Bookmark View Set automatically provides 'list', 'create' and 'retrieve'
-    actions for authenticated users. Owners of bookmarks can perform 'update' and 'delete' actions.
+    This **Bookmark View Set** automatically provides
+    the following actions:
 
-    When filtering by 'date created' or 'date updated', please use the following ISO 8601 format:
+    - `list`
+    - `create`
+    - `retrieve`
+
+    `Update` and `destroy` operations are permitted
+    only to owners of bookmarks or superusers.
+
+    When filtering by __date created__ or __date updated__,
+    please use the following ISO 8601 format:
 
     *YYYY-MM-DD hh:mm:ss*
     """
@@ -91,9 +103,12 @@ class BookmarkViewSet(viewsets.ModelViewSet):
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    This User View Set automatically provides 'list' and 'retrieve' actions.
+    This **User View Set** automatically provides the following actions:
 
-    User instances are accessible by username.
+    - `list`
+    - `retrieve`
+
+    A custom `bookmarks` action can be performed on the user endpoints.
     """
     queryset = User.objects.all().order_by('pk')
     serializer_class = UserSerializer
@@ -121,7 +136,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True)
     def bookmarks(self, request, *args, **kwargs):
-        """An additional endpoint for listing all user's bookmarks"""
+        """An additional endpoint for listing all user's bookmarks."""
         user = self.get_object()
         bookmarks = Bookmark.public.filter(owner=user)
         if request.user.is_authenticated and (request.user == user or
