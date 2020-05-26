@@ -90,13 +90,6 @@ class BookmarkViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    # def retrieve(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     if not instance.is_public and instance.owner != request.user and not request.user.is_superuser:
-    #         raise exceptions.PermissionDenied()
-    #     serializer = self.get_serializer(instance)
-    #     return Response(serializer.data)
-
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
