@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'coverage',
+    'django_extensions',
     # own apps
     'marcador',
     'marcador_api',

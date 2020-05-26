@@ -18,6 +18,20 @@ class Tag(models.Model):
         return self.name
 
 
+class BookmarkQuerySet(models.QuerySet):
+    def with_owner(self):
+        return self.select_related('owner')
+
+    def with_tags(self):
+        return self.prefetch_related('tags')
+
+    def public(self):
+        return self.filter(is_public=True)
+
+    def with_related(self):
+        return self.with_owner().with_tags()
+
+
 class PublicBookmarkManager(models.Manager):
     def get_queryset(self):
         qs = super(PublicBookmarkManager, self).get_queryset()
@@ -37,7 +51,7 @@ class Bookmark(models.Model):
     )
     tags = models.ManyToManyField(Tag, blank=True)
 
-    objects = models.Manager()
+    objects = BookmarkQuerySet.as_manager()
     public = PublicBookmarkManager()
 
     class Meta:
