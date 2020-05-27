@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from django.db.models import Prefetch, Q
 
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import exceptions
 from rest_framework import filters
 from rest_framework import permissions
 from rest_framework import viewsets
@@ -60,7 +59,7 @@ class BookmarkViewSet(viewsets.ModelViewSet):
 
     *YYYY-MM-DD hh:mm:ss*
     """
-    queryset = Bookmark.objects.all()
+    queryset = Bookmark.objects.with_related()
     serializer_class = BookmarkSerializer
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
